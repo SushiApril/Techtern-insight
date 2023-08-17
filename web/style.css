@@ -2,18 +2,31 @@ body {
     font-family: Arial, sans-serif;
 }
 
-.header{
+.navbar{
+    margin-top: 20px;
+    margin-bottom: 30px;
     display: flex;
+    border-bottom: 1px solid rgba(78, 78, 78, 0.26);
 }
 
 h1 {
-    margin-top: 20px;
     margin-left: 50px;
-    margin-bottom: 50px;
+
     color: rgb(185, 105, 118);
 }
 h1:hover {
     color: rgb(129, 66, 77);
+}
+
+.data{
+    margin-top: 30px;
+    margin-left: 40px;
+    text-decoration: none;
+    color:rgb(197, 127, 139);
+}
+
+.data:hover{
+    color: rgb(160, 87, 99);
 }
 
 .repolink{
@@ -25,6 +38,32 @@ h1:hover {
 
 .repolink:hover{
     color: rgb(160, 87, 99);
+}
+
+.intro{
+    margin-top: 100px;
+    margin-left: 40px;
+    font-size: 50px;
+    color:Black;
+}
+
+p{
+    padding: 10px;
+    margin-left: 40px;
+    margin-bottom: 100px;
+    font-size: 20px;
+    color:Black;
+}
+
+.btn{
+    background-color: rgb(197, 127, 139);
+    color: black;
+    text-decoration: none;
+    padding:25px;
+    margin-top: 100px;
+    margin-left: 60px;
+    font-size: 20px;
+    border-radius: 10px;
 }
 
 table {

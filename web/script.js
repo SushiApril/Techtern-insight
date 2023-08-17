@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    fetch("p.csv")
+    fetch("jobtest.csv")
         .then(response => response.text())
         .then(data => {
             const csvTable = document.getElementById("csvTable");
