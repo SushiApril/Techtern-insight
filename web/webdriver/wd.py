@@ -7,71 +7,84 @@ import re
 
 PATH = ".\chromedriver.exe"
 l = list()
-o = {}
 
-target_url = "https://www.glassdoor.com/Job/irvine-software-intern-jobs-SRCH_IL.0,6_IC1146798_KO7,22.htm?radius=100"
+def remove_duplicate_dicts(input_list):
+    unique_dicts = []
+    for d in input_list:
+        if d not in unique_dicts:
+            unique_dicts.append(d)
+    return unique_dicts
 
-driver = webdriver.Chrome()
-
-driver.get(target_url)
-
-driver.maximize_window()
-time.sleep(2)
-
-resp = driver.page_source
-
-driver.close()
-
-soup = BeautifulSoup(resp, "html.parser")
-
-allJobsContainer = soup.find("ul", {"class":"css-7ry9k1"})
-
-allJobs = allJobsContainer.find_all("li")
-
-
-for job in allJobs:
-    try:
-        name = job.find("div", {"class":"job-search-gx72iw"}).text
-        name = re.sub(r'[^a-zA-Z\s]', '', name)
-        o["name-of-company"]=name
-    except:
-        o["name-of-company"]=None
-
-    try:
-        name = job.find("div",{"class":"job-title mt-xsm"}).text
-        name = re.sub(r',', '', name)
-
-        if ("software" in name.lower() and "intern" in name.lower()):
-            o["name-of-job"]=name
-        else:
-            continue
-    except:
-        o["name-of-job"]=None
-
-    try:
-        location = job.find("div",{"class":"location mt-xxsm"}).text
-        location = re.sub(r',', '', location)
-        o["location"]=location
-    except:
-        o["location"]=None
-
-    try:
-        salary = job.find("div",{"class":"salary-estimate"}).text
-        salary = re.sub(r',','', salary)
-        o["salary"]=salary
-    except:
-        o["salary"]=None
-
-    try:
-        o["date"] = job.find("div",{"class":"listing-age"}).text
-    except:
-        o["date"]=None
-
-    
-    
-    l.append(o)
+def scrape(target_url):
     o = {}
+    driver = webdriver.Chrome()
 
+    driver.get(target_url)
+
+    driver.maximize_window()
+    time.sleep(2)
+
+    resp = driver.page_source
+
+    driver.close()
+
+    soup = BeautifulSoup(resp, "html.parser")
+
+    allJobsContainer = soup.find("ul", {"class":"css-7ry9k1"})
+
+    allJobs = allJobsContainer.find_all("li")
+
+
+    for job in allJobs:
+        try:
+            name = job.find("div", {"class":"job-search-gx72iw"}).text
+            name = re.sub(r'[^a-zA-Z\s]', '', name)
+            o["name-of-company"]=name
+        except:
+            o["name-of-company"]=None
+
+        try:
+            name = job.find("div",{"class":"job-title mt-xsm"}).text
+            name = re.sub(r',', '', name)
+
+            lower = name.lower()
+
+            if (("software" in lower or "develop" in lower) and "intern" in name.lower()):
+                o["name-of-job"]=name
+            else:
+                continue
+        except:
+            o["name-of-job"]=None
+
+        try:
+            location = job.find("div",{"class":"location mt-xxsm"}).text
+            location = re.sub(r',', '', location)
+            o["location"]=location
+        except:
+            o["location"]=None
+
+        try:
+            salary = job.find("div",{"class":"salary-estimate"}).text
+            salary = re.sub(r',','', salary)
+            o["salary"]=salary
+        except:
+            o["salary"]=None
+
+        try:
+            o["date"] = job.find("div",{"class":"listing-age"}).text
+        except:
+            o["date"]=None
+
+        l.append(o)
+        o = {}
+
+target_url = ["https://www.glassdoor.com/Job/irvine-python-intern-jobs-SRCH_IL.0,6_IC1146798_KO7,20.htm?radius=100","https://www.glassdoor.com/Job/irvine-software-intern-jobs-SRCH_IL.0,6_IC1146798_KO7,22.htm?radius=100"]
+
+for url in target_url:
+    scrape(url)
+
+
+l = remove_duplicate_dicts(l)
 
 sorted_list = sorted(l, key=lambda x: x["name-of-company"])
 
