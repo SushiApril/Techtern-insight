@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
+import requests
 import time
 import pandas
 import re
@@ -79,20 +80,21 @@ def scrape(target_url):
 
         extendedDescriptionLink = "https://www.glassdoor.com" + extendedDescriptionLinkElement["href"]
 
-        extendedDescription = webdriver.Chrome()
+        extendedDescriptionResponse = requests.get(extendedDescriptionLink, headers={
+            'User-Agent': 'TechTern Scraper',
+            'Referer': 'https://www.example.com',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Accept-Encoding': 'gzip, deflate',
+            'Connection': 'keep-alive'})
 
-        extendedDescription.get(extendedDescriptionLink)
+        extendedDescriptionSoup = BeautifulSoup(extendedDescriptionResponse.text, "html.parser")
 
-        extendedDescriptionSource = extendedDescription.page_source
-        '''x=extendedDescriptionSource.index('data-easy-apply')
-        print(extendedDescriptionSource[x-150:x+250])'''
-
-        extendedDescriptionSoup = BeautifulSoup(extendedDescriptionSource, "html.parser")
+        #x=extendedDescriptionResponse.text.index('data-easy-apply')
+        print(extendedDescriptionResponse.text)
 
         try:
             appLinkElement = extendedDescriptionSoup.find("button", {"data-easy-apply": "false"})
             o["application-link"] = "https://www.glassdoor.com" + appLinkElement["data-job-url"]
-            print(o["application-link"])
         except:
             o["application-link"] = None
 
