@@ -94,3 +94,14 @@ td {
     vertical-align: top; /* Align data cells with top of header */
     border-bottom: 1px solid rgba(0, 0, 0, 0.466);
 }
+
+.icon-link{
+    opacity: .5;
+    width: 32px;
+    height: auto;
+}
+
+.icon-link:hover{
+    opacity: 1;
+    transition: filter 0.3s ease; /* Smooth transition effect */
+}
