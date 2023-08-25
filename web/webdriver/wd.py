@@ -26,16 +26,15 @@ def scrape(target_url):
 
     resp = driver.page_source
 
-    driver.close()
-
     soup = BeautifulSoup(resp, "html.parser")
 
     allJobsContainer = soup.find("ul", {"class":"css-7ry9k1"})
 
     allJobs = allJobsContainer.find_all("li")
 
+    jobLinkElements = driver.find_elements(By.CLASS_NAME, "eigr9kq3")
 
-    for job in allJobs:
+    for job, jobLink in zip(allJobs, jobLinkElements):
         try:
             name = job.find("div", {"class":"job-search-gx72iw"}).text
             name = re.sub(r'[^a-zA-Z\s]', '', name)
@@ -75,29 +74,26 @@ def scrape(target_url):
         except:
             o["date"]=None
 
-        extendedDescriptionLinkElement = job.find("a")
+        try:
+            cancelModalButton = driver.find_element(By.CLASS_NAME, "e1jbctw80")
+            cancelModalButton.click()
+        except:
+            pass
 
-        extendedDescriptionLink = "https://www.glassdoor.com" + extendedDescriptionLinkElement["href"]
+        jobLink.click()
 
-        extendedDescription = webdriver.Chrome()
-
-        extendedDescription.get(extendedDescriptionLink)
-
-        extendedDescriptionSource = extendedDescription.page_source
-        '''x=extendedDescriptionSource.index('data-easy-apply')
-        print(extendedDescriptionSource[x-150:x+250])'''
-
-        extendedDescriptionSoup = BeautifulSoup(extendedDescriptionSource, "html.parser")
+        driver.implicitly_wait(1)
 
         try:
-            appLinkElement = extendedDescriptionSoup.find("button", {"data-easy-apply": "false"})
-            o["application-link"] = "https://www.glassdoor.com" + appLinkElement["data-job-url"]
-            print(o["application-link"])
+            app_link = driver.find_element(By.CSS_SELECTOR, "[data-apply-type]")
+            o["application-link"] = "https://www.glassdoor.com" + app_link.get_attribute("data-job-url")
         except:
             o["application-link"] = None
 
         l.append(o)
         o = {}
+
+    driver.close()
 
 target_url = ["https://www.glassdoor.com/Job/irvine-python-intern-jobs-SRCH_IL.0,6_IC1146798_KO7,20.htm?radius=100","https://www.glassdoor.com/Job/irvine-software-intern-jobs-SRCH_IL.0,6_IC1146798_KO7,22.htm?radius=100"]
 
