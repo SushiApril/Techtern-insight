@@ -68,6 +68,11 @@ p{
 
 table {
     border-collapse: collapse;
+}
+
+#table-container {
+    width: 100%;
+    overflow-x: scroll;
     margin-left: auto;
     margin-right: auto;
     width: 80%;
