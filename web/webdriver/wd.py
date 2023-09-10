@@ -7,15 +7,50 @@ import time
 import pandas
 import re
 
-PATH = ".\chromedriver.exe"
-l = []
+'''
+PENDING TASKS
 
-def remove_duplicate_dicts(input_list):
+-Do not make scraper click a job when it does not need to be added
+-Add easy apply URL as the job listing's own page
+-Use WebDriverWait for going between pages???
+'''
+
+PATH = ".\chromedriver.exe"
+l = set()
+
+'''def remove_duplicate_dicts(input_list):
     unique_dicts = []
     for d in input_list:
         if d not in unique_dicts:
             unique_dicts.append(d)
-    return unique_dicts
+    return unique_dicts'''
+
+class Position(dict):
+    COMPARISON_KEYS = ("name-of-company", "name-of-job", "location")
+
+    def __eq__(self, other):
+        try:
+            for key in self.COMPARISON_KEYS:
+                if self[key] != other[key]:
+                    return False
+
+            return True
+        except KeyError:
+            return False
+        
+    def __hash__(self):
+        return hash(tuple(self[attr] for attr in self.COMPARISON_KEYS))
+    
+    def __lt__(self, other):
+        self_name = self["name-of-company"]
+        other_name = other["name-of-company"]
+
+        if self_name == None:
+            return False
+        elif other_name == None:
+            return True
+        else:
+            return self_name < other_name
 
 def scrape(target_url, max_pgs=5):
     with webdriver.Chrome() as driver:
@@ -99,16 +134,16 @@ def scrape(target_url, max_pgs=5):
                     o["date"]=None
 
                 try:
-                    app_link = driver.find_element(By.CSS_SELECTOR, '[data-easy-apply="false"]')
-                    o["application-link"] = "https://www.glassdoor.com" + app_link.get_attribute("data-job-url")
+                    appLink = driver.find_element(By.CSS_SELECTOR, '[data-easy-apply="false"]')
+
+                    o["application-link"] = "https://www.glassdoor.com" + appLink.get_attribute("data-job-url")
                 except:
                     o["application-link"] = None
 
-                l.append(o)
+                l.add(Position(o))
 
             nextButton = driver.find_element(By.CLASS_NAME, "nextButton")
 
-            print(curr_pg)
             if nextButton.get_attribute("disabled") == None and curr_pg != max_pgs:
                 nextButton.click()
                 curr_pg += 1
@@ -120,10 +155,9 @@ target_url = ["https://www.glassdoor.com/Job/irvine-python-intern-jobs-SRCH_IL.0
 for url in target_url:
     scrape(url)
 
+#l = remove_duplicate_dicts(l)
 
-l = remove_duplicate_dicts(l)
-
-sorted_list = sorted(l, key=lambda x: '' if x["name-of-company"] == None else x["name-of-company"])
+sorted_list = sorted(l) #, key=lambda x: '' if x["name-of-company"] == None else x["name-of-company"])
 
 df = pandas.DataFrame(sorted_list)
 df.to_csv('web/jobtest.csv', index = False, encoding = "utf-8")
