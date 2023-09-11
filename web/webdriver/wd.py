@@ -6,7 +6,28 @@ from bs4 import BeautifulSoup
 import time
 import pandas
 import re
+import sqlite3
 
+def setup_database():
+    conn = sqlite3.connect('jobs.db') # Creates a new SQLite file named 'jobs.db'
+    c = conn.cursor()
+    
+    # Create a new table
+    c.execute('''
+    CREATE TABLE IF NOT EXISTS jobs (
+        id INTEGER PRIMARY KEY,
+        name_of_company TEXT,
+        name_of_job TEXT,
+        location TEXT,
+        salary TEXT,
+        date TEXT,
+        application_link TEXT
+    )
+    ''')
+
+    
+    conn.commit()
+    conn.close()
 '''
 PENDING TASKS
 
@@ -14,9 +35,6 @@ PENDING TASKS
 -Add easy apply URL as the job listing's own page
 -Use WebDriverWait for going between pages???
 '''
-
-PATH = ".\chromedriver.exe"
-l = set()
 
 '''def remove_duplicate_dicts(input_list):
     unique_dicts = []
@@ -51,6 +69,10 @@ class Position(dict):
             return True
         else:
             return self_name < other_name
+        
+    def to_tuple(self):
+        return (self.get("name-of-company"), self.get("name-of-job"), self.get("location"), 
+                self.get("salary"), self.get("date"), self.get("application-link"))
 
 def scrape(target_url, max_pgs=5):
     with webdriver.Chrome() as driver:
@@ -149,15 +171,35 @@ def scrape(target_url, max_pgs=5):
                 curr_pg += 1
             else:
                 pagesLeft = False
- 
-target_url = ["https://www.glassdoor.com/Job/irvine-python-intern-jobs-SRCH_IL.0,6_IC1146798_KO7,20.htm?radius=100","https://www.glassdoor.com/Job/irvine-software-intern-jobs-SRCH_IL.0,6_IC1146798_KO7,22.htm?radius=100"]
 
-for url in target_url:
-    scrape(url)
+def insert_into_db(position):
+    conn = sqlite3.connect('jobs.db')
+    c = conn.cursor()
+    
+    c.execute('''
+    INSERT INTO jobs (name_of_company, name_of_job, location, salary, date, application_link)
+    VALUES (?, ?, ?, ?, ?, ?)
+    ''', position.to_tuple())
+    
+    conn.commit()
+    conn.close()
 
-#l = remove_duplicate_dicts(l)
 
-sorted_list = sorted(l) #, key=lambda x: '' if x["name-of-company"] == None else x["name-of-company"])
 
-df = pandas.DataFrame(sorted_list)
-df.to_csv('web/jobtest.csv', index = False, encoding = "utf-8")
+
+if __name__=="__main__":
+    PATH = ".\chromedriver.exe"
+    l = set()
+    setup_database()
+    target_url = ["https://www.glassdoor.com/Job/irvine-python-intern-jobs-SRCH_IL.0,6_IC1146798_KO7,20.htm?radius=100","https://www.glassdoor.com/Job/irvine-software-intern-jobs-SRCH_IL.0,6_IC1146798_KO7,22.htm?radius=100"]
+
+    for url in target_url:
+        scrape(url)
+
+
+    sorted_list = sorted(l) #, key=lambda x: '' if x["name-of-company"] == None else x["name-of-company"])
+
+    for sl in l:
+        insert_into_db(sl)
+    df = pandas.DataFrame(sorted_list)
+    df.to_csv('web/jobtest.csv', index = False, encoding = "utf-8")
