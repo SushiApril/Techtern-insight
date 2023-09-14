@@ -8,6 +8,21 @@ import pandas
 import re
 import sqlite3
 
+'''
+PENDING TASKS
+
+-Do not make scraper click a job when it does not need to be added
+-Add easy apply URL as the job listing's own page
+-Use WebDriverWait for going between pages???
+'''
+
+'''def remove_duplicate_dicts(input_list):
+    unique_dicts = []
+    for d in input_list:
+        if d not in unique_dicts:
+            unique_dicts.append(d)
+    return unique_dicts'''
+
 def setup_database():
     conn = sqlite3.connect('jobs.db') # Creates a new SQLite file named 'jobs.db'
     c = conn.cursor()
@@ -28,20 +43,7 @@ def setup_database():
     
     conn.commit()
     conn.close()
-'''
-PENDING TASKS
 
--Do not make scraper click a job when it does not need to be added
--Add easy apply URL as the job listing's own page
--Use WebDriverWait for going between pages???
-'''
-
-'''def remove_duplicate_dicts(input_list):
-    unique_dicts = []
-    for d in input_list:
-        if d not in unique_dicts:
-            unique_dicts.append(d)
-    return unique_dicts'''
 
 class Position(dict):
     COMPARISON_KEYS = ("name-of-company", "name-of-job", "location")
@@ -73,8 +75,12 @@ class Position(dict):
     def to_tuple(self):
         return (self.get("name-of-company"), self.get("name-of-job"), self.get("location"), 
                 self.get("salary"), self.get("date"), self.get("application-link"))
+    
 
-def scrape(target_url, max_pgs=5):
+
+
+
+def scrape(target_url, max_pgs=100):
     with webdriver.Chrome() as driver:
         curr_pg = 1
 
@@ -184,6 +190,26 @@ def insert_into_db(position):
     conn.commit()
     conn.close()
 
+
+
+
+def run():
+    setup_database()
+
+    PATH = ".\chromedriver.exe"
+
+    target_url = ["https://www.glassdoor.com/Job/irvine-python-intern-jobs-SRCH_IL.0,6_IC1146798_KO7,20.htm?radius=100","https://www.glassdoor.com/Job/irvine-software-intern-jobs-SRCH_IL.0,6_IC1146798_KO7,22.htm?radius=100"]
+
+    for url in target_url:
+        scrape(url)
+
+
+    sorted_list = sorted(l) #, key=lambda x: '' if x["name-of-company"] == None else x["name-of-company"])
+
+    for sl in l:
+        insert_into_db(sl)
+    df = pandas.DataFrame(sorted_list)
+    df.to_csv('web/jobtest.csv', index = False, encoding = "utf-8")
 
 
 
