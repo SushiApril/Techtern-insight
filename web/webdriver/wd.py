@@ -56,7 +56,7 @@ class Position(dict):
 
 
 def setup_database():
-    conn = sqlite3.connect('jobs.db') # Creates a new SQLite file named 'jobs.db'
+    conn = sqlite3.connect('web/jobs.db') # Creates a new SQLite file named 'jobs.db'
     c = conn.cursor()
     
     # Create a new table
@@ -176,7 +176,7 @@ def scrape(target_url, max_pgs=5):
                 pagesLeft = False
 
 def insert_into_db(position):
-    conn = sqlite3.connect('jobs.db')
+    conn = sqlite3.connect('web/jobs.db')
     c = conn.cursor()
     
     c.execute('''
@@ -210,9 +210,6 @@ def export_jobs_to_csv(db_path, csv_path):
     cursor.execute('SELECT name_of_company, name_of_job, location, salary, date, application_link FROM jobs')
     data = cursor.fetchall()
 
-    # Close the database connection
-    conn.close()
-
     # Write the data to a CSV file
     with open(csv_path, 'w', newline='') as csv_file:
         writer = csv.writer(csv_file)
@@ -236,4 +233,4 @@ if __name__=="__main__":
 
     for url in target_url:
         scrape(url)
-    export_jobs_to_csv('jobs.db', 'jobs.csv')
+    export_jobs_to_csv('web/jobs.db', 'web/jobs.csv')

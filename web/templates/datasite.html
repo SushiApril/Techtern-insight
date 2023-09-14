@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data List</title>
+    <link rel="stylesheet" href="static/style.css">
+    
+</head>
+<body>
+
+    <div class="navbar">
+        <a href="/" style="text-decoration: none;">
+            <h1>
+                Techtern Insight
+            </h1>
+        </a>
+        <a href="datasite" class="data">
+            Postings List
+        </a>
+        <a href="https://github.com/SushiApril/Techtern-insight" class="repolink" target="_blank">
+            Project Repository
+        </a>
+
+    </div>
+
+    <div id="table-container">
+        <table id="csvTable">
+            <tr>
+                <th>Company</th>
+                <th>Position</th>
+                <th>Location</th>
+                <th>Salary</th>
+                <th>Date Posted</th>
+                <th>Link</th>
+            </tr>
+            {% for job in jobs %}
+            <tr>
+                {% for i, detail in job %}
+                <td>
+                    {% if detail == None %}
+                    {% elif i != 5 %}
+                        {{ detail }}
+                    {% else %}
+                        <a href="{{ detail }}" target="_blank">
+                            <img src="static/images/icon.png" alt="Application Link" class="icon-link">
+                        </a>
+                    {% endif %}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
