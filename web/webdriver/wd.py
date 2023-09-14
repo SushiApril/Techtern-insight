@@ -8,26 +8,6 @@ import pandas
 import re
 import sqlite3
 
-def setup_database():
-    conn = sqlite3.connect('jobs.db') # Creates a new SQLite file named 'jobs.db'
-    c = conn.cursor()
-    
-    # Create a new table
-    c.execute('''
-    CREATE TABLE IF NOT EXISTS jobs (
-        id INTEGER PRIMARY KEY,
-        name_of_company TEXT,
-        name_of_job TEXT,
-        location TEXT,
-        salary TEXT,
-        date TEXT,
-        application_link TEXT
-    )
-    ''')
-
-    
-    conn.commit()
-    conn.close()
 '''
 PENDING TASKS
 
@@ -73,6 +53,28 @@ class Position(dict):
     def to_tuple(self):
         return (self.get("name-of-company"), self.get("name-of-job"), self.get("location"), 
                 self.get("salary"), self.get("date"), self.get("application-link"))
+
+
+def setup_database():
+    conn = sqlite3.connect('jobs.db') # Creates a new SQLite file named 'jobs.db'
+    c = conn.cursor()
+    
+    # Create a new table
+    c.execute('''
+    CREATE TABLE IF NOT EXISTS jobs (
+        id INTEGER PRIMARY KEY,
+        name_of_company TEXT,
+        name_of_job TEXT,
+        location TEXT,
+        salary TEXT,
+        date TEXT,
+        application_link TEXT
+    )
+    ''')
+
+    
+    conn.commit()
+    conn.close()
 
 def scrape(target_url, max_pgs=5):
     with webdriver.Chrome() as driver:
@@ -163,6 +165,7 @@ def scrape(target_url, max_pgs=5):
                     o["application-link"] = None
 
                 l.add(Position(o))
+                insert_into_db(Position(o))
 
             nextButton = driver.find_element(By.CLASS_NAME, "nextButton")
 
@@ -185,6 +188,44 @@ def insert_into_db(position):
     conn.close()
 
 
+import sqlite3
+import csv
+
+def export_jobs_to_csv(db_path, csv_path):
+    """
+    Export job data from SQLite database to CSV file.
+
+    Args:
+    - db_path (str): Path to SQLite database.
+    - csv_path (str): Path to save the CSV file.
+
+    Returns:
+    None
+    """
+    # Connect to the SQLite database
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    # Fetch all data from the database
+    cursor.execute('SELECT name_of_company, name_of_job, location, salary, date, application_link FROM jobs')
+    data = cursor.fetchall()
+
+    # Close the database connection
+    conn.close()
+
+    # Write the data to a CSV file
+    with open(csv_path, 'w', newline='') as csv_file:
+        writer = csv.writer(csv_file)
+
+        # Write the headers
+        writer.writerow(['name-of-company', 'name-of-job', 'location', 'salary', 'date', 'application-link'])
+
+        # Write the rows
+        for row in data:
+            writer.writerow(row)
+
+# Usage example:
+# export_jobs_to_csv('job.db', 'jobs.csv')
 
 
 if __name__=="__main__":
@@ -195,11 +236,4 @@ if __name__=="__main__":
 
     for url in target_url:
         scrape(url)
-
-
-    sorted_list = sorted(l) #, key=lambda x: '' if x["name-of-company"] == None else x["name-of-company"])
-
-    for sl in l:
-        insert_into_db(sl)
-    df = pandas.DataFrame(sorted_list)
-    df.to_csv('web/jobtest.csv', index = False, encoding = "utf-8")
+    export_jobs_to_csv('jobs.db', 'jobs.csv')

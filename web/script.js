@@ -27,7 +27,7 @@
 // });
 
 document.addEventListener("DOMContentLoaded", () => {
-    fetch("jobtest.csv")
+    fetch("jobs.csv")
         .then(response => response.text())
         .then(data => {
             const csvTable = document.getElementById("csvTable");
