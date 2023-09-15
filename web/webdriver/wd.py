@@ -7,6 +7,7 @@ import time
 import pandas
 import re
 import sqlite3
+import csv
 
 '''
 PENDING TASKS
@@ -56,7 +57,7 @@ class Position(dict):
 
 
 def setup_database():
-    conn = sqlite3.connect('web/jobs.db') # Creates a new SQLite file named 'jobs.db'
+    conn = sqlite3.connect('./web/jobs.db') # Creates a new SQLite file named 'jobs.db'
     c = conn.cursor()
     
     # Create a new table
@@ -68,7 +69,8 @@ def setup_database():
         location TEXT,
         salary TEXT,
         date TEXT,
-        application_link TEXT
+        application_link TEXT NOT NULL,
+        UNIQUE(name_of_company, name_of_job, location)
     )
     ''')
 
@@ -164,7 +166,6 @@ def scrape(target_url, max_pgs=5):
                 except:
                     o["application-link"] = None
 
-                l.add(Position(o))
                 insert_into_db(Position(o))
 
             nextButton = driver.find_element(By.CLASS_NAME, "nextButton")
@@ -176,20 +177,20 @@ def scrape(target_url, max_pgs=5):
                 pagesLeft = False
 
 def insert_into_db(position):
-    conn = sqlite3.connect('web/jobs.db')
+    conn = sqlite3.connect('./web/jobs.db')
     c = conn.cursor()
+    try:
+        c.execute('''
+        INSERT INTO jobs (name_of_company, name_of_job, location, salary, date, application_link)
+        VALUES (?, ?, ?, ?, ?, ?)
+        ''', position.to_tuple())
     
-    c.execute('''
-    INSERT INTO jobs (name_of_company, name_of_job, location, salary, date, application_link)
-    VALUES (?, ?, ?, ?, ?, ?)
-    ''', position.to_tuple())
-    
-    conn.commit()
+        conn.commit()
+        print(position.to_tuple())
+    except sqlite3.IntegrityError:
+        print("Duplicate entry detected!")
     conn.close()
 
-
-import sqlite3
-import csv
 
 def export_jobs_to_csv(db_path, csv_path):
     """
@@ -210,6 +211,9 @@ def export_jobs_to_csv(db_path, csv_path):
     cursor.execute('SELECT name_of_company, name_of_job, location, salary, date, application_link FROM jobs')
     data = cursor.fetchall()
 
+    # Close the database connection
+    conn.close()
+
     # Write the data to a CSV file
     with open(csv_path, 'w', newline='') as csv_file:
         writer = csv.writer(csv_file)
@@ -227,10 +231,12 @@ def export_jobs_to_csv(db_path, csv_path):
 
 if __name__=="__main__":
     PATH = ".\chromedriver.exe"
-    l = set()
     setup_database()
-    target_url = ["https://www.glassdoor.com/Job/irvine-python-intern-jobs-SRCH_IL.0,6_IC1146798_KO7,20.htm?radius=100","https://www.glassdoor.com/Job/irvine-software-intern-jobs-SRCH_IL.0,6_IC1146798_KO7,22.htm?radius=100"]
-
-    for url in target_url:
-        scrape(url)
-    export_jobs_to_csv('web/jobs.db', 'web/jobs.csv')
+    _home = "https://www.glassdoor.com/Job/software-intern-jobs-SRCH_KO0,15.htm"
+    page_8 = "https://www.glassdoor.com/Job/software-intern-jobs-SRCH_KO0,15_IP10.htm?includeNoSalaryJobs=true"
+    target_url = [_home]
+    try:
+        for url in target_url:
+            scrape(url,30)
+    except:
+        print("An error happened")
