@@ -3,11 +3,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
-import time
-import pandas
+from collections import OrderedDict
 import re
 import sqlite3
-import csv
+import time
 
 '''
 PENDING TASKS
@@ -22,7 +21,7 @@ PENDING TASKS
     for d in input_list:
         if d not in unique_dicts:
             unique_dicts.append(d)
-    return unique_dicts'''
+    return unique_dicts
 
 class Position(dict):
     COMPARISON_KEYS = ("name-of-company", "name-of-job", "location")
@@ -53,10 +52,11 @@ class Position(dict):
         
     def to_tuple(self):
         return (self.get("name-of-company"), self.get("name-of-job"), self.get("location"), 
-                self.get("salary"), self.get("date"), self.get("application-link"))
+                self.get("salary"), self.get("date"), self.get("application-link"))'''
 
 
 def setup_database():
+    open('./web/jobs.db', 'w')
     conn = sqlite3.connect('./web/jobs.db') # Creates a new SQLite file named 'jobs.db'
     c = conn.cursor()
     
@@ -98,8 +98,17 @@ def scrape(target_url, max_pgs=5):
 
         driver.execute_script(removeModalJS)
 
+        wait1Min = WebDriverWait(driver, 60)
+
         while pagesLeft:
-            time.sleep(2)
+            def correctPage(driver):
+                try:
+                    pageNumElement = driver.find_element(By.CLASS_NAME, 'paginationFooter')
+                    return f'Page {curr_pg}' in pageNumElement.text
+                except NoSuchElementException:
+                    return False
+
+            wait1Min.until(correctPage)
 
             resp = driver.find_element(By.CLASS_NAME, "css-152bcv1")
 
@@ -114,16 +123,15 @@ def scrape(target_url, max_pgs=5):
             jobLinkElements = driver.find_elements(By.CLASS_NAME, "eigr9kq3")
 
             for job, jobLink in zip(allJobs, jobLinkElements):
-                o = {}
+                o = OrderedDict()
 
                 jobLink.click()
 
                 try:
-                    waitForElem = WebDriverWait(driver, 5)
-                    name = waitForElem.until(EC.presence_of_element_located((By.CSS_SELECTOR, '[data-test="employerName"]')))
+                    name = wait1Min.until(EC.presence_of_element_located((By.CSS_SELECTOR, '[data-test="employerName"]')))
                     name = name.text.split("\n")[0]
                     name = re.sub(r',', '', name)
-                    o["name-of-company"]=name
+                    o["name-of-company"]=name.capitalize()
                 except:
                     o["name-of-company"]=None
 
@@ -166,7 +174,7 @@ def scrape(target_url, max_pgs=5):
                 except:
                     o["application-link"] = None
 
-                insert_into_db(Position(o))
+                insert_into_db(tuple(o.values()))
 
             nextButton = driver.find_element(By.CLASS_NAME, "nextButton")
 
@@ -183,16 +191,16 @@ def insert_into_db(position):
         c.execute('''
         INSERT INTO jobs (name_of_company, name_of_job, location, salary, date, application_link)
         VALUES (?, ?, ?, ?, ?, ?)
-        ''', position.to_tuple())
+        ''', position)
     
         conn.commit()
-        print(position.to_tuple())
+        print(position)
     except sqlite3.IntegrityError:
         print("Duplicate entry detected!")
     conn.close()
 
 
-def export_jobs_to_csv(db_path, csv_path):
+'''def export_jobs_to_csv(db_path, csv_path):
     """
     Export job data from SQLite database to CSV file.
 
@@ -226,10 +234,10 @@ def export_jobs_to_csv(db_path, csv_path):
             writer.writerow(row)
 
 # Usage example:
-# export_jobs_to_csv('job.db', 'jobs.csv')
+# export_jobs_to_csv('job.db', 'jobs.csv')'''
 
 
-if __name__=="__main__":
+def main():
     PATH = ".\chromedriver.exe"
     setup_database()
     _home = "https://www.glassdoor.com/Job/software-intern-jobs-SRCH_KO0,15.htm"
@@ -240,3 +248,21 @@ if __name__=="__main__":
             scrape(url,30)
     except:
         print("An error happened")
+
+    with sqlite3.connect('./web/jobs.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT name_of_company, name_of_job, location, salary, date, application_link FROM jobs ORDER BY name_of_company ASC;')
+
+        rows = cursor.fetchall()
+
+        cursor.execute('DELETE FROM jobs')
+
+        for row in rows:
+            print(tuple(row))
+            cursor.execute('''
+                INSERT INTO jobs (name_of_company, name_of_job, location, salary, date, application_link)
+                VALUES (?, ?, ?, ?, ?, ?)
+                ''', tuple(row))
+            
+if __name__=="__main__":
+    main()
