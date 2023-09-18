@@ -182,12 +182,20 @@ def insert_into_db(position):
     conn = sqlite3.connect('jobs.db')
     c = conn.cursor()
     
+<<<<<<< Updated upstream
     c.execute('''
     INSERT INTO jobs (name_of_company, name_of_job, location, salary, date, application_link)
     VALUES (?, ?, ?, ?, ?, ?)
     ''', position.to_tuple())
     
     conn.commit()
+=======
+        conn.commit()
+        print(position.to_tuple())
+    except sqlite3.IntegrityError:
+        #print("Duplicate entry detected!")
+        pass
+>>>>>>> Stashed changes
     conn.close()
 
 
