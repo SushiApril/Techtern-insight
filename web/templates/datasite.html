@@ -42,8 +42,8 @@
                     {% elif i != 5 %}
                         {{ detail }}
                     {% else %}
-                        <a href="{{ detail }}" target="_blank">
-                            <img src="static/images/icon.png" alt="Application Link" class="icon-link">
+                        <a href="{{ detail }}" target="_blank" class="button-link">
+                            <button class="apply-button icon-link">APPLY</button> 
                         </a>
                     {% endif %}
                 </td>
@@ -52,6 +52,5 @@
             {% endfor %}
         </table>
     </div>
-    <script src="script.js"></script>
 </body>
 </html>

@@ -16,45 +16,6 @@ PENDING TASKS
 -Use WebDriverWait for going between pages???
 '''
 
-'''def remove_duplicate_dicts(input_list):
-    unique_dicts = []
-    for d in input_list:
-        if d not in unique_dicts:
-            unique_dicts.append(d)
-    return unique_dicts
-
-class Position(dict):
-    COMPARISON_KEYS = ("name-of-company", "name-of-job", "location")
-
-    def __eq__(self, other):
-        try:
-            for key in self.COMPARISON_KEYS:
-                if self[key] != other[key]:
-                    return False
-
-            return True
-        except KeyError:
-            return False
-        
-    def __hash__(self):
-        return hash(tuple(self[attr] for attr in self.COMPARISON_KEYS))
-    
-    def __lt__(self, other):
-        self_name = self["name-of-company"]
-        other_name = other["name-of-company"]
-
-        if self_name == None:
-            return False
-        elif other_name == None:
-            return True
-        else:
-            return self_name < other_name
-        
-    def to_tuple(self):
-        return (self.get("name-of-company"), self.get("name-of-job"), self.get("location"), 
-                self.get("salary"), self.get("date"), self.get("application-link"))'''
-
-
 def setup_database():
     open('./web/jobs.db', 'w')
     conn = sqlite3.connect('./web/jobs.db') # Creates a new SQLite file named 'jobs.db'
@@ -90,6 +51,7 @@ def scrape(target_url, max_pgs=5):
 
         removeModalCSS = '#LoginModal {display: none;}'
 
+        #this is for scraping glassdoor without logging in. Prvenet login popup
         removeModalJS = f'''
                          var scriptRemoveStyle = document.createElement("style");
                          scriptRemoveStyle.innerHTML = "{removeModalCSS}";
@@ -100,7 +62,9 @@ def scrape(target_url, max_pgs=5):
 
         wait1Min = WebDriverWait(driver, 60)
 
+
         while pagesLeft:
+            #checks if its the correct page to scrape
             def correctPage(driver):
                 try:
                     pageNumElement = driver.find_element(By.CLASS_NAME, 'paginationFooter')
@@ -116,10 +80,11 @@ def scrape(target_url, max_pgs=5):
 
             soup = BeautifulSoup(respSource, "html.parser")
 
+            #bs
             allJobsContainer = soup.find("ul", {"class":"css-7ry9k1"})
-
+            #bs
             allJobs = allJobsContainer.find_all("li")
-
+            #selenium
             jobLinkElements = driver.find_elements(By.CLASS_NAME, "eigr9kq3")
 
             for job, jobLink in zip(allJobs, jobLinkElements):
@@ -198,44 +163,6 @@ def insert_into_db(position):
     except sqlite3.IntegrityError:
         print("Duplicate entry detected!")
     conn.close()
-
-
-'''def export_jobs_to_csv(db_path, csv_path):
-    """
-    Export job data from SQLite database to CSV file.
-
-    Args:
-    - db_path (str): Path to SQLite database.
-    - csv_path (str): Path to save the CSV file.
-
-    Returns:
-    None
-    """
-    # Connect to the SQLite database
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-
-    # Fetch all data from the database
-    cursor.execute('SELECT name_of_company, name_of_job, location, salary, date, application_link FROM jobs')
-    data = cursor.fetchall()
-
-    # Close the database connection
-    conn.close()
-
-    # Write the data to a CSV file
-    with open(csv_path, 'w', newline='') as csv_file:
-        writer = csv.writer(csv_file)
-
-        # Write the headers
-        writer.writerow(['name-of-company', 'name-of-job', 'location', 'salary', 'date', 'application-link'])
-
-        # Write the rows
-        for row in data:
-            writer.writerow(row)
-
-# Usage example:
-# export_jobs_to_csv('job.db', 'jobs.csv')'''
-
 
 def main():
     PATH = ".\chromedriver.exe"

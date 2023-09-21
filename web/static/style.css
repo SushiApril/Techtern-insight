@@ -82,7 +82,7 @@ th,
 td {
     /*border: 1px solid #ddd; */
     padding: 10px;
-    text-align: left;
+    text-align: center;
     
 }
 
@@ -90,7 +90,6 @@ td {
 th {
     background-color:rgba(218, 147, 159, 0.815);
     font-weight: bold;
-    text-align: left;
     width: 20%;
 }
 
@@ -98,15 +97,36 @@ th {
 td {
     vertical-align: top; /* Align data cells with top of header */
     border-bottom: 1px solid rgba(0, 0, 0, 0.466);
+    
 }
 
 .icon-link{
-    opacity: .5;
-    width: 32px;
-    height: auto;
+    border-radius: 20px;
+    background: #7DF0F8;
+    
 }
 
 .icon-link:hover{
     opacity: 1;
     transition: filter 0.3s ease; /* Smooth transition effect */
+}
+.apply-button {
+    display: flex;
+    width: 130px;
+    height: 32px;
+    padding: 0px 22px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    border-radius: 20px;
+    background: #7DF0F8;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    border: none; /* Optional: remove default button borders */
+    cursor: pointer; /* Optional: make it visually clear it's clickable */
+    text-decoration: none; /* Optional: remove underlines from text */
+    font-weight: bold; /* Make the text bold */
+    text-decoration: none;
+}
+.button-link {
+    text-decoration: none;
 }
