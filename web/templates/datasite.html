@@ -31,17 +31,24 @@
                 <th>Position</th>
                 <th>Location</th>
                 <th>Salary</th>
-                <th>Date Posted</th>
+                <th>Days Since Posting</th>
                 <th>Link</th>
             </tr>
             {% for job in jobs %}
             <tr>
                 {% for i, detail in job %}
                 <td>
-                    {% if detail == None %}
-                    {% elif i != 5 %}
+                    {% if i < 4 %}
                         {{ detail }}
-                    {% else %}
+                    {% elif i == 4 %}
+                        {% if detail == 0 %}
+                            &lt1
+                        {% elif detail == 31 %}
+                            &gt30
+                        {% else %}
+                            {{ detail }}
+                        {% endif %}
+                    {% elif i == 5 %}
                         <a href="{{ detail }}" target="_blank" class="button-link">
                             <button class="apply-button icon-link">APPLY</button> 
                         </a>

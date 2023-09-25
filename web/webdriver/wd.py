@@ -6,12 +6,10 @@ from bs4 import BeautifulSoup
 from collections import OrderedDict
 import re
 import sqlite3
-import time
 
 '''
 PENDING TASKS
 
--Do not make scraper click a job when it does not need to be added
 -Add easy apply URL as the job listing's own page
 -Use WebDriverWait for going between pages???
 '''
@@ -29,7 +27,7 @@ def setup_database():
         name_of_job TEXT,
         location TEXT,
         salary TEXT,
-        date TEXT,
+        date INTEGER,
         application_link TEXT NOT NULL,
         UNIQUE(name_of_company, name_of_job, location)
     )
@@ -39,9 +37,9 @@ def setup_database():
     conn.commit()
     conn.close()
 
-def scrape(target_url, max_pgs=5):
+def scrape(target_url, maxPgs=5):
     with webdriver.Chrome() as driver:
-        curr_pg = 1
+        currPg = 1
 
         driver.get(target_url)
 
@@ -50,7 +48,7 @@ def scrape(target_url, max_pgs=5):
         pagesLeft = True
 
         removeModalCSS = '#LoginModal {display: none;}'
-
+        
         #this is for scraping glassdoor without logging in. Prvenet login popup
         removeModalJS = f'''
                          var scriptRemoveStyle = document.createElement("style");
@@ -62,13 +60,12 @@ def scrape(target_url, max_pgs=5):
 
         wait1Min = WebDriverWait(driver, 60)
 
-
         while pagesLeft:
             #checks if its the correct page to scrape
             def correctPage(driver):
                 try:
                     pageNumElement = driver.find_element(By.CLASS_NAME, 'paginationFooter')
-                    return f'Page {curr_pg}' in pageNumElement.text
+                    return f'Page {currPg}' in pageNumElement.text
                 except NoSuchElementException:
                     return False
 
@@ -80,23 +77,30 @@ def scrape(target_url, max_pgs=5):
 
             soup = BeautifulSoup(respSource, "html.parser")
 
-            #bs
+            # BS
             allJobsContainer = soup.find("ul", {"class":"css-7ry9k1"})
-            #bs
+            # BS
             allJobs = allJobsContainer.find_all("li")
-            #selenium
+            # Selenium
             jobLinkElements = driver.find_elements(By.CLASS_NAME, "eigr9kq3")
 
             for job, jobLink in zip(allJobs, jobLinkElements):
                 o = OrderedDict()
 
-                jobLink.click()
-
                 try:
-                    name = wait1Min.until(EC.presence_of_element_located((By.CSS_SELECTOR, '[data-test="employerName"]')))
-                    name = name.text.split("\n")[0]
-                    name = re.sub(r',', '', name)
-                    o["name-of-company"]=name.capitalize()
+                    nameInfo = {}
+
+                    for info, tag, classId in zip(('name', 'rating'), ('div', 'span'), ('8wag7x', 'rnnx2x')):
+                        for idPrefix in ('css', 'job-search'):
+                            try:
+                                nameInfo[info] = job.find(tag,{"class":f"{idPrefix}-{classId}"}).text
+                            except:
+                                continue
+                            else:
+                                break
+
+                    name = nameInfo['name'].replace(nameInfo['rating'], '')
+                    o["name-of-company"]=name.title()
                 except:
                     o["name-of-company"]=None
 
@@ -128,14 +132,32 @@ def scrape(target_url, max_pgs=5):
                     o["salary"]=None
 
                 try:
-                    o["date"] = job.find("div",{"class":"listing-age"}).text
+                    date = job.find("div",{"class":"listing-age"}).text
+
+                    if date[-1] == 'd':
+                        numDays = int(date[:-1])  
+                    elif date == '24h':
+                        numDays = 0
+                    elif date == '30d+':
+                        numDays = 31
+                    else:
+                        numDays = None
+
+                    o["date"] = numDays
                 except:
                     o["date"]=None
 
-                try:
-                    appLink = driver.find_element(By.CSS_SELECTOR, '[data-easy-apply="false"]')
+                jobLink.click()
 
-                    o["application-link"] = "https://www.glassdoor.com" + appLink.get_attribute("data-job-url")
+                try:
+                    try:
+                        appLinkElement = driver.find_element(By.CSS_SELECTOR, '[data-easy-apply="false"]')
+                        linkPath = appLinkElement.get_attribute("data-job-url")
+                    except:
+                        appLinkElement = job.find("a",{"class":"jobCard"})
+                        linkPath = appLinkElement.get('href')
+
+                    o["application-link"] = "https://www.glassdoor.com" + linkPath
                 except:
                     o["application-link"] = None
 
@@ -143,9 +165,9 @@ def scrape(target_url, max_pgs=5):
 
             nextButton = driver.find_element(By.CLASS_NAME, "nextButton")
 
-            if nextButton.get_attribute("disabled") == None and curr_pg != max_pgs:
+            if nextButton.get_attribute("disabled") == None and currPg != maxPgs:
                 nextButton.click()
-                curr_pg += 1
+                currPg += 1
             else:
                 pagesLeft = False
 
@@ -160,8 +182,8 @@ def insert_into_db(position):
     
         conn.commit()
         print(position)
-    except sqlite3.IntegrityError:
-        print("Duplicate entry detected!")
+    except sqlite3.IntegrityError as err:
+        print("Duplicate entry detected - ", position, str(err))
     conn.close()
 
 def main():
@@ -169,16 +191,16 @@ def main():
     setup_database()
     _home = "https://www.glassdoor.com/Job/software-intern-jobs-SRCH_KO0,15.htm"
     page_8 = "https://www.glassdoor.com/Job/software-intern-jobs-SRCH_KO0,15_IP10.htm?includeNoSalaryJobs=true"
-    target_url = [_home]
+    targetUrl = [_home]
     try:
-        for url in target_url:
+        for url in targetUrl:
             scrape(url,30)
     except:
         print("An error happened")
 
     with sqlite3.connect('./web/jobs.db') as conn:
         cursor = conn.cursor()
-        cursor.execute('SELECT name_of_company, name_of_job, location, salary, date, application_link FROM jobs ORDER BY name_of_company ASC;')
+        cursor.execute('SELECT name_of_company, name_of_job, location, salary, date, application_link FROM jobs ORDER BY date ASC;')
 
         rows = cursor.fetchall()
 
