@@ -11,7 +11,7 @@ def index():
 def datasite():
     with sqlite3.connect('web/jobs.db') as conn:
         cursor = conn.cursor()
-        cursor.execute('SELECT name_of_company, name_of_job, location, salary, date, application_link FROM jobs')
+        cursor.execute('SELECT name_of_company, name_of_job, location, salary, date, application_link FROM jobs ORDER BY date DESC')
 
         def jobsGenerator():
             while job := cursor.fetchone():

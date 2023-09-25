@@ -51,6 +51,7 @@ def scrape(target_url, max_pgs=5):
 
         removeModalCSS = '#LoginModal {display: none;}'
 
+        #this is for scraping glassdoor without logging in. Prvenet login popup
         removeModalJS = f'''
                          var scriptRemoveStyle = document.createElement("style");
                          scriptRemoveStyle.innerHTML = "{removeModalCSS}";
@@ -61,7 +62,9 @@ def scrape(target_url, max_pgs=5):
 
         wait1Min = WebDriverWait(driver, 60)
 
+
         while pagesLeft:
+            #checks if its the correct page to scrape
             def correctPage(driver):
                 try:
                     pageNumElement = driver.find_element(By.CLASS_NAME, 'paginationFooter')
@@ -77,10 +80,11 @@ def scrape(target_url, max_pgs=5):
 
             soup = BeautifulSoup(respSource, "html.parser")
 
+            #bs
             allJobsContainer = soup.find("ul", {"class":"css-7ry9k1"})
-
+            #bs
             allJobs = allJobsContainer.find_all("li")
-
+            #selenium
             jobLinkElements = driver.find_elements(By.CLASS_NAME, "eigr9kq3")
 
             for job, jobLink in zip(allJobs, jobLinkElements):
