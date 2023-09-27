@@ -1,69 +1,70 @@
+:root{
+    --midblue: #0c5692;
+    --dgray: #424561;
+    --dark: #044c8c;
+    --lightblue: #4b79a1;
+}
+
 body {
+    margin:0px;
     font-family: Arial, sans-serif;
 }
 
 .navbar{
     margin-top: 20px;
-    margin-bottom: 30px;
+    margin-bottom: 60px;
     display: flex;
     border-bottom: 1px solid rgba(78, 78, 78, 0.26);
 }
 
-h1 {
-    margin-left: 50px;
+.logo{
+    width: 200px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    margin-left: 45px;
+    margin-right: 20px;
 
-    color: rgb(185, 105, 118);
-}
-h1:hover {
-    color: rgb(129, 66, 77);
 }
 
-.data{
+.navbtn{
     margin-top: 30px;
     margin-left: 40px;
     text-decoration: none;
-    color:rgb(197, 127, 139);
+    color:var(--lightblue);
 }
 
-.data:hover{
-    color: rgb(160, 87, 99);
-}
-
-.repolink{
-    margin-top: 30px;
-    margin-left: 40px;
-    text-decoration: none;
-    color:rgb(197, 127, 139);
-}
-
-.repolink:hover{
-    color: rgb(160, 87, 99);
+.navbtn:hover{
+    color: var(--dgray);
 }
 
 .intro{
     margin-top: 100px;
-    margin-left: 40px;
+    margin-left: 60px;
     font-size: 50px;
     color:Black;
 }
 
 p{
     padding: 10px;
-    margin-left: 40px;
+    margin-left: 60px;
     margin-bottom: 100px;
     font-size: 20px;
     color:Black;
 }
 
 .btn{
-    background-color: rgb(197, 127, 139);
-    color: black;
+    background-color: var(--lightblue);
+    color: white;
     text-decoration: none;
     padding:25px;
     margin-top: 100px;
     margin-left: 60px;
     font-size: 20px;
     border-radius: 10px;
+}
+
+.btn:hover{
+    background-color: var(--dgray)
 }
 
 table {
@@ -88,8 +89,9 @@ td {
 
 /* Style the header cells */
 th {
-    background-color:rgba(218, 147, 159, 0.815);
-    font-weight: bold;
+    background-color:var(--lightblue);
+    font-weight:500;
+    color: white;
     width: 20%;
 }
 
@@ -100,26 +102,18 @@ td {
     
 }
 
-.icon-link{
-    border-radius: 20px;
-    background: #7DF0F8;
-    
-}
 
-.icon-link:hover{
-    opacity: 1;
-    transition: filter 0.3s ease; /* Smooth transition effect */
-}
 .apply-button {
     display: flex;
-    width: 130px;
+    width: 110px;
     height: 32px;
     padding: 0px 22px;
     justify-content: center;
     align-items: center;
     gap: 10px;
     border-radius: 20px;
-    background: #7DF0F8;
+    background-color: var(--lightblue);
+    color: white;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
     border: none; /* Optional: remove default button borders */
     cursor: pointer; /* Optional: make it visually clear it's clickable */
@@ -127,6 +121,32 @@ td {
     font-weight: bold; /* Make the text bold */
     text-decoration: none;
 }
+
+.apply-button:hover{
+    background-color: var(--dgray);
+}
+
 .button-link {
     text-decoration: none;
 }
+
+/* section{
+    position:relative;
+    width: 100%;
+    height: 30vh;
+    margin-top: 30px;
+    overflow: hidden;
+    background: pink;
+}
+
+
+section .wave{
+    position: absolute;
+    bottom:0;
+    left:0;
+    width: 100%;
+    height:100px;
+    background: url(images/wave.png);
+    background-size: 1000px 100px;
+    filter: hue-rotate(207, 71%, 31%);
+} */
