@@ -10,16 +10,21 @@
 <body>
 
     <div class="navbar">
-        <a href="/" style="text-decoration: none;">
-            <h1>
-                Techtern Insight
-            </h1>
+        <a href="/">
+            <img 
+                src="{{url_for('static', filename='/images/Logo.png')}}" 
+                class="logo"
+            />
         </a>
-        <a href="datasite" class="data">
+        <a href="datasite" class="navbtn">
             Postings List
         </a>
-        <a href="https://github.com/SushiApril/Techtern-insight" class="repolink" target="_blank">
+        <a href="https://github.com/SushiApril/Techtern-insight" class="navbtn" target="_blank">
             Project Repository
+        </a>
+
+        <a href="about" class="navbtn">
+            About
         </a>
 
     </div>
