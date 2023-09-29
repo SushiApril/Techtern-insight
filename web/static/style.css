@@ -130,6 +130,103 @@ td {
     text-decoration: none;
 }
 
+/* about page formatting */
+
+.column {
+    float: left;
+    width: 33.3%;
+    display: flex;
+    flex-direction: column; /* Stack child elements vertically */
+  }
+  
+  .card {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    margin: 10px;
+  }
+  
+  .about-section {
+    padding: 0px;
+    text-align: center;
+    background-color: #474e5d;
+    color: white;
+  }
+  
+  .container {
+    padding: 0 16px;
+  }
+  
+  .container::after, .row::after {
+    content: "";
+    clear: both;
+    display: table;
+  }
+
+  h2.devintro{
+    font-size:xx-large;
+    color:var(--dgray);
+  }
+
+  h3{
+    font-size:x-large;
+    color: var(--dgray);
+    margin:10px;
+    margin-top: 25px;
+  }
+
+  .title {
+    color: grey;
+    margin: 0px;
+  }
+  .position{
+    margin: 0px;
+    color: var(--dark);
+  }
+
+  .desc{
+    margin:0px; 
+    color:var(--lightblue);
+  }
+  .web{
+    font-size: 40px;
+    color: var(--lightblue);
+    margin: 3px;
+    margin-bottom: 20px;
+    padding-bottom:50px;
+    }
+.web:hover{
+    color: var(--dgray);
+}
+
+  .git{
+    font-size: 45px;
+    color: var(--lightblue);
+    margin: 3px;
+    margin-bottom: 20px;
+    padding-bottom:50px;
+    }
+
+.web:hover{
+    color: var(--dgray);
+}
+    
+
+.linked{
+    font-size: 45px;
+    color: var(--lightblue);
+    margin: 3px;
+    margin-bottom: 20px;
+    padding-bottom:50px;
+}
+
+.linked:hover{
+    color: var(--dgray);
+}
+
+.container{
+    margin:20px;
+}
+
+
 /* section{
     position:relative;
     width: 100%;
