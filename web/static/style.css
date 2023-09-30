@@ -132,16 +132,19 @@ td {
 
 /* about page formatting */
 
-.column {
+.cards_wrapper {
     float: left;
-    width: 33.3%;
     display: flex;
-    flex-direction: column; /* Stack child elements vertically */
+    max-height: 100vh;
+    flex-wrap: wrap;
+    justify-content: center;
   }
   
   .card {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     margin: 10px;
+    min-width: 30%;
+    max-width: 30%;
   }
   
   .about-section {
