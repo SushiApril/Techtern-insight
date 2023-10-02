@@ -309,21 +309,60 @@ section .wave.wave3{
     }
 }
 
-section .wave.wave4{
-    animation: animate4 30s linear infinite;
-    z-index: 997;
-    opacity: 0.7;
-    animation-delay: -4s;
-    bottom: 10px;
+
+@media only screen and (max-device-width: 600px) {
+    html.about-page{
+        .card {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            margin: 10px;
+            min-width:90%;
+            max-width: 90%;
+          }
+
+    }
+    .logo{
+        width:100px;
+        margin-top: 30px;
+        margin-left: 15px;
+        margin-right: 10px;
+    }
+
+    .navbtn{
+        margin-left: 7px;
+        margin-right: 7px;
+        font-size:smaller;
+    }
+
+    .intro{
+        margin: 40px;
+        font-size: 25px;
+        color:Black;
+    }
+    
+    p{
+        margin: 30px;
+        margin-bottom: 50px;
+
+    }
+    .btn{
+        margin-left: 40px;
+    }
+    section .wave.wave1{
+        bottom: 0px;
+    }
+    section .wave.wave2{
+        bottom: 30px;
+    }
+    section .wave.wave3{
+        bottom: 40px;
+    }
 }
-@keyframes animate4
-{
-    0%
-    {
-        background-position-x: 0;
+
+
+@media only screen and (max-device-width: 1300px){
+    .card{
+        max-width: 45%;
+        min-width: 45%
     }
-    100%
-    {
-        background-position-x: 2000px;
-    }
+
 }
