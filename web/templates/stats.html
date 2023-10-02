@@ -2,9 +2,39 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Stats</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Statistics</title>
+    <link rel="stylesheet" href="static/style.css">
 </head>
 <body>
+
+    <div class="navbar">
+        <a href="/">
+            <img 
+                src="{{url_for('static', filename='/images/Logo.png')}}" 
+                class="logo"
+            />
+        </a>
+        <a href="datasite" class="navbtn">
+            Postings List
+        </a>
+        <a href="stats" class="navbtn">
+            Findings
+        </a>
+        <!-- <a href="calc" class="navbtn">
+            Salary Calculator
+        </a> -->
+        <a href="https://github.com/SushiApril/Techtern-insight" class="navbtn" target="_blank">
+            Project Repository
+        </a>
+
+        <a href="about" class="navbtn">
+            About
+        </a>
+
+    </div>
+
+
     {{ days_since_posted|safe }}
 
     {{ avg_salary_distribution|safe }}
