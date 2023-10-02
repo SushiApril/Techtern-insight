@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Techtern Insight</title>
+    <title>Data Statistics</title>
     <link rel="stylesheet" href="static/style.css">
-    
 </head>
 <body>
+
     <div class="navbar">
         <a href="/">
             <img 
@@ -35,23 +35,25 @@
 
     </div>
 
-    <h2 class="intro">
-        Find your perfect internship
-    </h2>
-    <p>The premium resource for UCI students to find tech internships.
-        <br>
-        <br>
-        Get started now to find hundreds of SWE positions near UCI.
-    </p>
 
-    <a href="datasite" class="btn">Continue</a>
+    {{ days_since_posted|safe }}
 
-    <section>
-        <div class="wave wave1"></div>
-        <div class="wave wave2"></div>
-        <div class="wave wave3"></div>
+    {{ avg_salary_distribution|safe }}
 
-    </section>
+    {{ jobs_by_state|safe }}
+
+    {{ top_cities_by_jobs|safe }}
+
+    {{ avg_salary_by_state|safe }}
+
+    {{ salaries_by_state|safe }}
+
+    {{ salary_density_by_state|safe }}
+
+    {{ salary_boxplot_by_state|safe}}
+
+    {{company_wise_job_postings|safe}}
+
 
 </body>
 </html>
