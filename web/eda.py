@@ -27,10 +27,6 @@ def clean_data(df):
 
     return df
 
-def plot_days_since_posted(df):
-    fig = px.bar(df['date'].value_counts().head(10), title='Days since Posted')
-    fig.update_layout(xaxis_title='Days', yaxis_title='Count')
-    return fig.to_html(full_html=False)
 
 def plot_avg_salary_distribution(df):
     fig = px.histogram(df, x='avg_salary', nbins=20, title='Average SWE Interns Pay')
