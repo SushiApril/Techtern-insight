@@ -44,7 +44,7 @@
                 <th>Position</th>
                 <th>Location</th>
                 <th>Salary</th>
-                <th>Days Since Posting</th>
+                <th>Date Posted</th>
                 <th>Link</th>
             </tr>
             {% for job in jobs %}
@@ -54,13 +54,13 @@
                     {% if i < 4 %}
                         {{ detail }}
                     {% elif i == 4 %}
-                        {% if detail == 0 %}
-                            &lt1
-                        {% elif detail == 31 %}
-                            &gt30
+                        {% if detail == 32 %}
+                            {% set date = today - timedelta(days=31) %}
                         {% else %}
-                            {{ detail }}
+                            {% set date = today - timedelta(days=detail) %}
                         {% endif %}
+
+                        {{ "Before " if detail == 32 else "" }}{{ date.month }}/{{ date.day }}/{{ date.year }}
                     {% elif i == 5 %}
                         <a href="{{ detail }}" target="_blank" class="button-link">
                             <button class="apply-button icon-link">APPLY</button> 
