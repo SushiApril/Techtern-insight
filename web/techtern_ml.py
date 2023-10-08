@@ -140,7 +140,7 @@ print(f"Lasso Regression RMSE: {rmse_lasso}")
 print(f"Lasso Regression R^2: {r2_lasso}")
 
 residuals = y_test_clean - y_pred_lasso
-plt.scatter(y_pred_rf, residuals, alpha=0.5)
+plt.scatter(y_pred_lasso, residuals, alpha=0.5)
 plt.title('Residual Plot')
 plt.xlabel('Predicted Values')
 plt.ylabel('Residuals')

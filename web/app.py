@@ -41,8 +41,6 @@ def stats():
     return render_template("stats.html",  avg_salary_distribution=avg_salary_distribution,
                            jobs_by_state=jobs_by_state, top_cities_by_jobs=top_cities_by_jobs, avg_salary_by_state=avg_salary_by_state,
                            salaries_by_state=salaries_by_state, salary_density_by_state=salary_density_by_state, salary_boxplot_by_state=salary_boxplot_by_state, 
-                           company_wise_job_postings=company_wise_job_postings)
-                           
-                        
+                           company_wise_job_postings=company_wise_job_postings)      
 if __name__ == '__main__':
-    app.run(port=5003)
+    app.run(port=5004)
