@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import threading
 from importlib.util import spec_from_file_location, module_from_spec
 
-spec = spec_from_file_location("wd", "web\webdriver\wd.py")
+spec = spec_from_file_location("wd", "webdriver/wd.py")
 
 wd = module_from_spec(spec)
 
@@ -22,7 +22,7 @@ def index():
 def datasite():
     TODAY = datetime.today().date()
 
-    with sqlite3.connect('web/jobs.db') as conn:
+    with sqlite3.connect('jobs.db') as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT name_of_company, name_of_job, location, salary, date, application_link FROM jobs')
 
