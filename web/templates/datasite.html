@@ -45,7 +45,6 @@
                 <th>Location</th>
                 <th>Salary</th>
                 <th>Date Posted</th>
-                <th>Link</th>
             </tr>
             {% for job in jobs %}
             <tr>
@@ -62,7 +61,7 @@
 
                         {{ "Before " if detail == 32 else "" }}{{ date.month }}/{{ date.day }}/{{ date.year }}
                     {% elif i == 5 %}
-                        <a href="{{ detail }}" target="_blank" class="button-link">
+                        <a href="https://glassdoor.com" target="_blank" class="button-link">
                             <button class="apply-button icon-link">APPLY</button> 
                         </a>
                     {% endif %}
